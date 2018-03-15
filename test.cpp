@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[])
 {
-  auto t = cbm::BatchMatrix<float, cbm::CPU>::ones({3,20,10});
+  auto t = cbm::BatchMatrix<float, cbm::CUDA>::ones({3,20,10});
 
   cbm::IO::print(*t);
 

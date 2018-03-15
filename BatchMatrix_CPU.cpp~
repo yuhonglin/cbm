@@ -9,7 +9,7 @@
 namespace cbm {
   // Constructors 
   template<typename ScaType, Type MemType>
-  BatchMatrix<ScaType, MemType>::BatchMatrix(const BatchMatrix<ScaType, MemType>& t) {
+  BatchMatrix<ScaType, MemType>::BatchMatrix(BatchMatrix<ScaType, MemType>& t) {
     static_assert(MemType==CPU, "This function is only for constructing CPU from CPU");
     
     data_ = new ScaType[t.len()];
@@ -75,6 +75,15 @@ namespace cbm {
     }
     return ret;
   }
+
+  // Clone (CPU to CPU)
+  template<typename ScaType, Type MemType>
+  BatchMatrix<ScaType, MemType>* BatchMatrix<ScaType, MemType>::clone_cpu() const {
+    static_assert(MemType==CPU, "This function is only for CPU to CPU clone");
+    auto ret = new BatchMatrix<ScaType, MemType>(dim_[0], dim_[1], dim_[2]);
+    std::memcpy(ret->data(), data_, len_*sizeof(MemType));
+    return ret;
+  };
 
   template<typename ScaType, Type MemType>
   void BatchMatrix<ScaType, MemType>::add(ScaType v) {

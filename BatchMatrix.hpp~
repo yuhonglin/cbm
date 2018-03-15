@@ -23,14 +23,14 @@ namespace cbm {
     BatchMatrix() = delete;
     BatchMatrix(const std::vector<int>& d);
     BatchMatrix(int a, int b, int c);
-    //    BatchMatrix<ScaType, MemType>&
-    //    operator=(const BatchMatrix<ScaType, MemType>& d) = delete;
-    //    BatchMatrix(const BatchMatrix<ScaType, MemType>&& d) = delete;
+    BatchMatrix<ScaType, MemType>&
+    operator=(const BatchMatrix<ScaType, MemType>& d) = delete;
+    BatchMatrix(const BatchMatrix<ScaType, MemType>&& d) = delete;
     ~BatchMatrix();
 	
     // Copy / move
-    BatchMatrix(const BatchMatrix<ScaType, MemType>&  t);
-    //    BatchMatrix(BatchMatrix<ScaType, MemType>&& t) = delete;
+    BatchMatrix(BatchMatrix<ScaType, MemType>&  t);
+    BatchMatrix(BatchMatrix<ScaType, MemType>&& t) = delete;
 	
     // Creation
     static BatchMatrix<ScaType, MemType>*
@@ -40,8 +40,8 @@ namespace cbm {
       zeros(const std::vector<int>& d);
 	
     // Clone
-    BatchMatrix<ScaType, CPU>* clone_cpu() const;
-    BatchMatrix<ScaType, CUDA>* clone_cuda() const;
+    BatchMatrix<ScaType, MemType>* clone_cpu() const;
+    BatchMatrix<ScaType, MemType>* clone_cuda() const;
 
     // Getters
     Type type() const;

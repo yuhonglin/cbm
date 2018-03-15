@@ -4,7 +4,6 @@
 
 #include "Cuda.hpp"
 #include "Util_Cuda.hpp"
-#include "BatchMatrix.hpp"
 
 namespace cbm {
   // Constructors
@@ -27,6 +26,7 @@ namespace cbm {
 
     if (data_!=nullptr) CUDA_CHECK(cudaFree(data_));
   }
+
 
   template<typename ScaType, Type MemType>
   BatchMatrix<ScaType,MemType>::BatchMatrix(int a, int b, int c) {
@@ -53,20 +53,29 @@ namespace cbm {
   template<typename ScaType, Type MemType>
   BatchMatrix<ScaType, MemType>*
     BatchMatrix<ScaType, MemType>::ones(const std::vector<int>& d) {
-    static_assert(MemType==CUDA, "This function is only for CUDA");
+    static_assert(MemType==CPU, "This function is only for CUDA");
     auto ret = new BatchMatrix<ScaType, MemType>(d);
-    set_to_const<<<std::floor(ret->len()/TPB)+1, TPB>>>(ret->data(), static_cast<ScaType>(1), ret->len());
+    CudaUtil<ScaType>::set_to_const(ret->data(), 1, ret->len());
     return ret;
   }
 
   template<typename ScaType, Type MemType>
   BatchMatrix<ScaType, MemType>*
-    BatchMatrix<ScaType, MemType>::zeros(const std::vector<int>& d) {
-    static_assert(MemType==CUDA, "This function is only for CUDA");
+    BatchMatrix<ScaType, MemType>::ones(const std::vector<int>& d) {
+    static_assert(MemType==CPU, "This function is only for CUDA");
     auto ret = new BatchMatrix<ScaType, MemType>(d);
-    set_to_const<<<std::floor(ret->len()/TPB)+1, TPB>>>(ret->data(), static_cast<ScaType>(0), ret->len());
+    CudaUtil<ScaType>::set_to_const(ret->data(), 0, ret->len());
     return ret;
   }
+
+  // Clone (CUDA to CUDA)
+  template<typename ScaType, Type MemType>
+  BatchMatrix<ScaType, MemType>* BatchMatrix<ScaType, MemType>::clone_cpu() const {
+    static_assert(MemType==CUDA, "This function is only for CUDA to CUDA clone");
+    auto ret = new BatchMatrix<ScaType, MemType>(size_);
+    CUDA_CHECK(cudaMemcpy(ret->data(), data_, len_*sizeof(MemType)));
+    return ret;
+  };
 
   template<typename ScaType, Type MemType>
   void BatchMatrix<ScaType, MemType>::add(ScaType v) {
