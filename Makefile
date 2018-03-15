@@ -1,3 +1,5 @@
+LAPACK_LIB = /usr/lib/liblapack.a
+
 all: test
 
 BatchMatrix.o: BatchMatrix.cpp BatchMatrix.hpp Cuda.hpp
@@ -24,5 +26,8 @@ BatchMatrix_Cuda.o: BatchMatrix_Cuda.cu Cuda.hpp
 BatchMatrix_macro.o: BatchMatrix_macro.cu Cuda.hpp
 	nvcc -std=c++11 -c BatchMatrix_macro.cu
 
-test: BatchMatrix.o BatchMatrix_CPU.o Log.o IO_CPU.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o Cuda.hpp
-	nvcc -std=c++11 BatchMatrix.o BatchMatrix_CPU.o IO_CPU.o Log.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o -o test
+LU_CPU.o: LU_CPU.cpp Decomp.hpp Lapack.hpp
+	g++ -std=c++11 -c LU_CPU.cpp
+
+test: BatchMatrix.o BatchMatrix_CPU.o Log.o IO_CPU.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o Cuda.hpp LU_CPU.o
+	nvcc -std=c++11 BatchMatrix.o BatchMatrix_CPU.o IO_CPU.o Log.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o LU_CPU.o -llapack -o test

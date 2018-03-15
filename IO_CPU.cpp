@@ -55,7 +55,7 @@ namespace cbm {
 	print_row(t, mat_idx, i);
 	std::printf("\n");
       }
-      for (int i = 0; i < num_left+num_right+1; i++) {
+      for (int i = 0; i < std::min(num_left+num_right+1, t.dim()[2]); i++) {
 	if (i == num_left) {
 	  std::printf(" ⋱%s", sep.c_str());
 	  continue;
