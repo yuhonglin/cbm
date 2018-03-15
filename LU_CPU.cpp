@@ -16,8 +16,13 @@ namespace cbm {
       int n    = t->dim()[2];
       int lda  = m;
 
-      for (int i = 0; i < t->dim()[0]; i++)
-	lapack::getrf<ScaType>(&m, &n, t->data()+i*t->stride()[0], &lda, p->data(), info->data());
+      for (int i = 0; i < t->dim()[0]; i++) {
+	lapack::getrf<ScaType>(&m, &n,
+			       t->data() + i*t->stride()[0],
+			       &lda,
+			       p->data() + i*p->stride()[0],
+			       info->data() + i*info->stride()[0]);
+      }
     }
 
     template void lu(BatchMatrix<double, CPU>* t,
