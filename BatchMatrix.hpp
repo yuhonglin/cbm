@@ -34,10 +34,13 @@ namespace cbm {
 	
     // Creation
     static BatchMatrix<ScaType, MemType>*
-      ones(const std::vector<int>& d);
+    ones(const std::vector<int>& d);
 
     static BatchMatrix<ScaType, MemType>*
-      zeros(const std::vector<int>& d);
+    zeros(const std::vector<int>& d);
+
+    static BatchMatrix<ScaType, MemType>*
+    unif(const std::vector<int>& d, ScaType lb = 0.0, ScaType ub = 1.0);
 	
     // Clone
     BatchMatrix<ScaType, CPU>* clone_cpu() const;

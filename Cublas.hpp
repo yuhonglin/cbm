@@ -30,7 +30,7 @@ namespace cbm {
 					      int batchSize);
 
     void init();
-    
+    void clear();
   } // namespace cublas
 }   // namespace cbm
 

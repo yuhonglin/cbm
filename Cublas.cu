@@ -64,6 +64,9 @@ namespace cbm {
 	first = false;
       }
     }
-    
+
+    void clear() {
+      cublasDestroy_v2(default_cublas_handle);
+    }
   }
 }

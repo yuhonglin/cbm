@@ -35,5 +35,11 @@ LU_Cuda.o: LU_Cuda.cu Decomp.hpp Cublas.hpp
 Cublas.o: Cublas.cu Cublas.hpp
 	nvcc -std=c++11 -c Cublas.cu
 
-test: BatchMatrix.o BatchMatrix_CPU.o Log.o IO_CPU.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o Cuda.hpp LU_CPU.o LU_Cuda.o Cublas.o
-	nvcc -std=c++11 BatchMatrix.o BatchMatrix_CPU.o IO_CPU.o Log.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o LU_CPU.o LU_Cuda.o Cublas.o -llapack -lcublas -o test
+Random_CPU.o: Random_CPU.cpp Random.hpp
+	g++ -std=c++11 -c Random_CPU.cpp
+
+Random_Cuda.o: Random_Cuda.cu Random.hpp
+	nvcc -std=c++11 -c Random_Cuda.cu
+
+test: BatchMatrix.o BatchMatrix_CPU.o Log.o IO_CPU.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o Cuda.hpp LU_CPU.o LU_Cuda.o Cublas.o Random_CPU.o Random_Cuda.o
+	nvcc -std=c++11 BatchMatrix.o BatchMatrix_CPU.o IO_CPU.o Log.o test.cpp Util_Cuda.o BatchMatrix_Cuda.o BatchMatrix_macro.o IO_Cuda.o LU_CPU.o LU_Cuda.o Cublas.o Random_CPU.o Random_Cuda.o -llapack -lcublas -o test

@@ -14,33 +14,38 @@
 int main(int argc, char *argv[])
 {
   cbm::cublas::init();
+  int m = 4;
+  auto original = cbm::BatchMatrix<float, cbm::CPU>::unif({4,m,m});
   
-  const cbm::Type MemType = cbm::CUDA;
+  {  
+    const cbm::Type MemType = cbm::CUDA;
 
-  int m = 12;
+    
   
-  auto t = cbm::BatchMatrix<float, MemType>::ones({4,m,m});
-  auto p = cbm::BatchMatrix<int, MemType>::zeros({4,m,1});
-  auto info = cbm::BatchMatrix<int, MemType>::zeros({4, 1, 1});
-  cbm::IO::print(*t);
-  cbm::decomp::lu(t, p, info);
-  cbm::IO::print(*t);
-  cbm::IO::print(*p);
-  cbm::IO::print(*info);
-
-  int num_one = 0;
-  float sum = 0.;
-  auto tmp = t->clone_cpu();
-  for (int i = 0; i < t->len(); i++) {
-    if (std::abs(tmp->data()[i]-1) < 1e-6) {
-      num_one++;
-    }
-    sum += tmp->data()[i];
+    auto t = original->clone_cuda();
+    auto p = cbm::BatchMatrix<int, MemType>::zeros({4,m,1});
+    auto info = cbm::BatchMatrix<int, MemType>::zeros({4, 1, 1});
+    //  cbm::IO::print(*t);
+    cbm::decomp::lu(t, p, info);
+    cbm::IO::print(*t);
+    //  cbm::IO::print(*p);
+    //  cbm::IO::print(*info);
   }
-  LOG_INFO(num_one);
-  LOG_INFO(sum);
 
-  cublasDestroy_v2(cbm::cublas::default_cublas_handle);
+  {  
+    const cbm::Type MemType = cbm::CPU;
+
+    auto t = original->clone_cpu();
+    auto p = cbm::BatchMatrix<int, MemType>::zeros({4,m,1});
+    auto info = cbm::BatchMatrix<int, MemType>::zeros({4, 1, 1});
+    //  cbm::IO::print(*t);
+    cbm::decomp::lu(t, p, info);
+    cbm::IO::print(*t);
+    //  cbm::IO::print(*p);
+    //  cbm::IO::print(*info);
+  }
+  
+  cbm::cublas::clear();
 
   return 0;
 }

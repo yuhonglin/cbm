@@ -6,6 +6,7 @@
 
 #include "BatchMatrix.hpp"
 #include "Log.hpp"
+#include "Random.hpp"
 
 namespace cbm {
 
@@ -37,6 +38,15 @@ namespace cbm {
   template<typename ScaType, Type MemType>
   Type BatchMatrix<ScaType, MemType>::type() const {
     return MemType;
+  }
+
+  template<typename ScaType, Type MemType>  
+  BatchMatrix<ScaType, MemType>*
+  BatchMatrix<ScaType, MemType>::unif(const std::vector<int>& d,
+				      ScaType lb, ScaType ub) {
+    auto ret = new BatchMatrix<ScaType, MemType>(d);
+    rand::runif<ScaType, MemType>(ret, lb, ub);
+    return ret;
   }
 
   
