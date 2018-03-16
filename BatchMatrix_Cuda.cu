@@ -1,6 +1,7 @@
 // Include CUDA implementations of BatchMatrix
 
 #include <cstdint>
+#include <memory>
 
 #include <cuda.h>
 
@@ -63,17 +64,16 @@ namespace cbm {
     
     CUDA_CHECK(cudaMalloc(&ptr_, dim_[0]*sizeof(ScaType*)));
 
-    ScaType** tmp = new ScaType*[dim_[0]];
+    std::unique_ptr<ScaType*[]> tmp(new ScaType*[dim_[0]]);
     for (int i = 0; i < dim_[0]; i++) tmp[i] = data_ + i*stride_[0];
+    CUDA_CHECK(cudaMemcpy(ptr_, tmp.get(), dim_[0]*sizeof(ScaType*), cudaMemcpyHostToDevice));
 
-    CUDA_CHECK(cudaMemcpy(ptr_, tmp, dim_[0]*sizeof(ScaType*), cudaMemcpyHostToDevice));
-
-    // !The following code does not work!
+    // //!The following code also works, but calling a kernel instead!
     //    inplace_set_inc<<<std::floor(dim_[0]/TPB)+1, TPB>>>(reinterpret_cast<std::intptr_t*>(ptr_),
-    //							reinterpret_cast<std::intptr_t>(data_),
-    //							static_cast<std::intptr_t>(stride_[0]),
-    //							1, dim_[0]);
-      
+    //    							reinterpret_cast<std::intptr_t>(data_),
+    //    							static_cast<std::intptr_t>(stride_[0]*sizeof(std::intptr_t)),
+    //       							1, dim_[0]);
+         
   }
 
   template<typename ScaType, Type MemType>
