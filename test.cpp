@@ -14,8 +14,8 @@ int main(int argc, char *argv[])
   
   const cbm::Type MemType = cbm::CUDA;
   
-  auto t = cbm::BatchMatrix<float, MemType>::ones({4,3,3});
-  auto p = cbm::BatchMatrix<int, MemType>::zeros({4, 3, 1});
+  auto t = cbm::BatchMatrix<float, MemType>::ones({4,32,32});
+  auto p = cbm::BatchMatrix<int, MemType>::zeros({4,32,1});
   auto info = cbm::BatchMatrix<int, MemType>::zeros({4, 1, 1});
   cbm::IO::print(*t);
   cbm::decomp::lu(t, p, info);

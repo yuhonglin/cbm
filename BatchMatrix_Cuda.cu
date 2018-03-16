@@ -1,5 +1,7 @@
 // Include CUDA implementations of BatchMatrix
 
+#include <cstdint>
+
 #include <cuda.h>
 
 #include "Cuda.hpp"
@@ -18,6 +20,11 @@ namespace cbm {
       dim_[i]    = t.dim()[i];
       stride_[i] = t.stride()[i];
     }
+
+    //    ptr_ = new ScaType*[t.dim()[0]];
+    //    for (int i = 0; i < t.dim()[0]; i++) {
+    //      ptr_[i] = data_ + i*stride_[0];
+    //    }
   }
 
   // Destructor
@@ -40,8 +47,14 @@ namespace cbm {
     stride_[2] = dim_[1];
     stride_[0] = dim_[1]*dim_[2];
     len_       = stride_[0]*dim_[0];
-
+    
     CUDA_CHECK(cudaMalloc(&data_, len_*sizeof(ScaType)));
+
+    CUDA_CHECK(cudaMalloc(&ptr_, dim_[0]*sizeof(ScaType*)));
+    inplace_set_inc<<<std::floor(dim_[0]/TPB)+1, TPB>>>(reinterpret_cast<std::intptr_t*>(ptr_),
+							reinterpret_cast<std::intptr_t>(data_),
+							static_cast<std::intptr_t>(stride_[0]),
+							1, dim_[0]);
   }
 
 
@@ -56,6 +69,9 @@ namespace cbm {
     static_assert(MemType==CUDA, "This function is only for CUDA");
     auto ret = new BatchMatrix<ScaType, MemType>(d);
     set_to_const<<<std::floor(ret->len()/TPB)+1, TPB>>>(ret->data(), static_cast<ScaType>(1), ret->len());
+
+    CUDA_CHECK(cudaDeviceSynchronize());
+    
     return ret;
   }
 

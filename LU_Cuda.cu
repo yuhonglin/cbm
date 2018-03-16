@@ -1,3 +1,5 @@
+#include "Cuda.hpp"
+
 #include "Log.hpp"
 #include "Decomp.hpp"
 #include "Cublas.hpp"
@@ -19,6 +21,8 @@ namespace cbm {
       cublas::cublasGetrfBatched<ScaType>(cublas::default_cublas_handle,
 					  n, t->ptr(), lda,
 					  p->data(), info->data(), t->dim()[0]);
+
+      CUDA_CHECK(cudaDeviceSynchronize());
     }
     
 
