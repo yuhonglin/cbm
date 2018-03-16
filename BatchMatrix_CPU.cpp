@@ -9,7 +9,8 @@
 namespace cbm {
   // Constructors 
   template<typename ScaType, Type MemType>
-  BatchMatrix<ScaType, MemType>::BatchMatrix(const BatchMatrix<ScaType, MemType>& t) {
+  BatchMatrix<ScaType, MemType>::BatchMatrix(const BatchMatrix<ScaType, MemType>& t)
+    : ptr_(nullptr) {
     static_assert(MemType==CPU, "This function is only for constructing CPU from CPU");
     
     data_ = new ScaType[t.len()];
@@ -20,10 +21,7 @@ namespace cbm {
       stride_[i] = t.stride()[i];
     }
 
-    ptr_ = new ScaType*[t.dim()[0]];
-    for (int i = 0; i < t.dim()[0]; i++) {
-      ptr_[i] = data_ + i*stride_[0];
-    }
+    update_ptr();
   }
 
   // Destructor
@@ -37,7 +35,7 @@ namespace cbm {
 
 
   template<typename ScaType, Type MemType>
-  BatchMatrix<ScaType,MemType>::BatchMatrix(int a, int b, int c) {
+  BatchMatrix<ScaType,MemType>::BatchMatrix(int a, int b, int c) : ptr_(nullptr) {
     static_assert(MemType==CPU, "This function is only for CPU");
 
     // copy
@@ -51,13 +49,19 @@ namespace cbm {
     
     data_ = new ScaType[len_];
 
+    update_ptr();
+  }
+
+  template<typename ScaType, Type MemType>
+  void BatchMatrix<ScaType,MemType>::update_ptr() {
+    if (ptr_!=nullptr) delete[] ptr_;
+
     ptr_ = new ScaType*[dim_[0]];
     for (int i = 0; i < dim_[0]; i++) {
       ptr_[i] = data_ + i*stride_[0];
     }
   }
-
-
+  
   template<typename ScaType, Type MemType>
   BatchMatrix<ScaType,MemType>::BatchMatrix(const std::vector<int>& d)
     : BatchMatrix(d[0], d[1], d[2]) {}

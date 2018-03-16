@@ -4,6 +4,7 @@
 
 #include <cuda.h>
 
+#include "Log.hpp"
 #include "Cuda.hpp"
 #include "Util_Cuda.hpp"
 #include "BatchMatrix.hpp"
@@ -11,7 +12,8 @@
 namespace cbm {
   // Constructors
   template<typename ScaType, Type MemType>
-  BatchMatrix<ScaType, MemType>::BatchMatrix(const BatchMatrix<ScaType, MemType>& t) {
+  BatchMatrix<ScaType, MemType>::BatchMatrix(const BatchMatrix<ScaType, MemType>& t)
+    : ptr_(nullptr) {
     static_assert(MemType==CUDA, "This function is only for constructing CUDA from CUDA");
     CUDA_CHECK(cudaMalloc(&data_, t.len()*sizeof(ScaType)));
     CUDA_CHECK(cudaMemcpy( data_, t.data(), t.len()*sizeof(ScaType), cudaMemcpyDeviceToDevice));
@@ -21,10 +23,7 @@ namespace cbm {
       stride_[i] = t.stride()[i];
     }
 
-    //    ptr_ = new ScaType*[t.dim()[0]];
-    //    for (int i = 0; i < t.dim()[0]; i++) {
-    //      ptr_[i] = data_ + i*stride_[0];
-    //    }
+    update_ptr();
   }
 
   // Destructor
@@ -36,7 +35,7 @@ namespace cbm {
   }
 
   template<typename ScaType, Type MemType>
-  BatchMatrix<ScaType,MemType>::BatchMatrix(int a, int b, int c) {
+  BatchMatrix<ScaType,MemType>::BatchMatrix(int a, int b, int c) : ptr_(nullptr) {
     static_assert(MemType==CUDA, "This function is only for CUDA");
 
     // copy
@@ -50,11 +49,7 @@ namespace cbm {
     
     CUDA_CHECK(cudaMalloc(&data_, len_*sizeof(ScaType)));
 
-    CUDA_CHECK(cudaMalloc(&ptr_, dim_[0]*sizeof(ScaType*)));
-    inplace_set_inc<<<std::floor(dim_[0]/TPB)+1, TPB>>>(reinterpret_cast<std::intptr_t*>(ptr_),
-							reinterpret_cast<std::intptr_t>(data_),
-							static_cast<std::intptr_t>(stride_[0]),
-							1, dim_[0]);
+    update_ptr();
   }
 
 
@@ -62,6 +57,24 @@ namespace cbm {
   BatchMatrix<ScaType,MemType>::BatchMatrix(const std::vector<int>& d)
     : BatchMatrix(d[0], d[1], d[2]) {}
 
+  template<typename ScaType, Type MemType>
+  void BatchMatrix<ScaType,MemType>::update_ptr() {
+    if (ptr_!=nullptr) CUDA_CHECK(cudaFree(ptr_));
+    
+    CUDA_CHECK(cudaMalloc(&ptr_, dim_[0]*sizeof(ScaType*)));
+
+    ScaType** tmp = new ScaType*[dim_[0]];
+    for (int i = 0; i < dim_[0]; i++) tmp[i] = data_ + i*stride_[0];
+
+    CUDA_CHECK(cudaMemcpy(ptr_, tmp, dim_[0]*sizeof(ScaType*), cudaMemcpyHostToDevice));
+
+    // !The following code does not work!
+    //    inplace_set_inc<<<std::floor(dim_[0]/TPB)+1, TPB>>>(reinterpret_cast<std::intptr_t*>(ptr_),
+    //							reinterpret_cast<std::intptr_t>(data_),
+    //							static_cast<std::intptr_t>(stride_[0]),
+    //							1, dim_[0]);
+      
+  }
 
   template<typename ScaType, Type MemType>
   BatchMatrix<ScaType, MemType>*

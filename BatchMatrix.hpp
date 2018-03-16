@@ -61,6 +61,9 @@ namespace cbm {
     void multiply(ScaType v);
     void divide(ScaType v);
     void minus(ScaType v);
+
+    // update ptr on data_; must be called after data_
+    void update_ptr();
     
   private:
     // meta data

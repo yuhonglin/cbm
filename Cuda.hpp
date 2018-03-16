@@ -1,6 +1,6 @@
 // Some common stuff for using cuda 
-#ifndef CUDA_H
-#define CUDA_H
+#ifndef CUDA_HPP
+#define CUDA_HPP
 
 #include <cuda.h>
 #include <cublas.h>

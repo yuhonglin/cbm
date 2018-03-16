@@ -17,7 +17,7 @@ namespace cbm {
       
       int n    = t->dim()[1];
       int lda  = n;
-      
+
       cublas::cublasGetrfBatched<ScaType>(cublas::default_cublas_handle,
 					  n, t->ptr(), lda,
 					  p->data(), info->data(), t->dim()[0]);
