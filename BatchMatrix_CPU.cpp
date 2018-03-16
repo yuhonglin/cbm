@@ -19,6 +19,11 @@ namespace cbm {
       dim_[i]    = t.dim()[i];
       stride_[i] = t.stride()[i];
     }
+
+    ptr_ = new ScaType*[t.dim()[0]];
+    for (int i = 0; i < t.dim()[0]; i++) {
+      ptr_[i] = data_ + i*stride_[0];
+    }
   }
 
   // Destructor
@@ -27,6 +32,7 @@ namespace cbm {
     static_assert(MemType==CPU, "This function is only for CPU");
 
     if (data_!=nullptr) delete[] data_;
+    if (ptr_!=nullptr) delete[] ptr_;
   }
 
 
@@ -44,6 +50,11 @@ namespace cbm {
     len_       = stride_[0]*dim_[0];
     
     data_ = new ScaType[len_];
+
+    ptr_ = new ScaType*[dim_[0]];
+    for (int i = 0; i < dim_[0]; i++) {
+      ptr_[i] = data_ + i*stride_[0];
+    }
   }
 
 

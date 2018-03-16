@@ -15,6 +15,11 @@ namespace cbm {
   }
 
   template<typename ScaType, Type MemType>
+  ScaType** BatchMatrix<ScaType, MemType>::ptr() const {
+    return ptr_;
+  }
+  
+  template<typename ScaType, Type MemType>
   const int* BatchMatrix<ScaType, MemType>::dim() const {
     return dim_;
   }

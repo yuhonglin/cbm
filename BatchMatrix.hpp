@@ -46,6 +46,7 @@ namespace cbm {
     // Getters
     Type type() const;
     ScaType* data() const; // use with care
+    ScaType** ptr() const;
     int len() const;
     const int* dim() const;
     const int* stride() const;
@@ -70,6 +71,10 @@ namespace cbm {
     // The data pointer
     // It is convenient to be a raw pointer because it may point to device
     ScaType* data_;
+    
+    // The reason for this memeber is that cublas batch routines only accept pointer
+    // array
+    ScaType** ptr_;
   };
 
 }  // namespace cbs

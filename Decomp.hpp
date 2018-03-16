@@ -1,3 +1,6 @@
+#ifndef DECOMP_H
+#define DECOMP_H
+
 #include <utility>
 
 #include "BatchMatrix.hpp"
@@ -13,3 +16,5 @@ namespace cbm {
   }  // decomp
 
 }  // cbm
+
+#endif /* DECOMP_H */

@@ -25,7 +25,7 @@ namespace cbm {
 
       template<typename ScaType, Type MemType>      
       static void print(const BatchMatrix<ScaType, MemType>& t);
-
+      
     };
     
 }  // namespace cbm
