@@ -28,6 +28,11 @@ namespace cbm {
     template<class T> void cublasGetrfBatched(cublasHandle_t& handle, int n, T *Array[],
 					      int lda, int *PivotArray, int*infoArray,
 					      int batchSize);
+    
+    template<class T> void cublasGemmBatched(cublasHandle_t& handle, cublasOperation_t transa,
+					     cublasOperation_t transb, int m, int n, int k,
+					     T alpha, T *Aarray[], int lda, T *Barray[], int ldb,
+					     T beta, T *Carray[], int ldc, int batchCount);
 
     void init();
     void clear();

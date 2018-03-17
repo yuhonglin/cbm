@@ -57,6 +57,23 @@ namespace cbm {
     };
 
 
+    template<> void cublasGemmBatched<float>(cublasHandle_t& handle, cublasOperation_t transa,
+					     cublasOperation_t transb, int m, int n, int k,
+					     float alpha, float *Aarray[], int lda, float *Barray[], int ldb,
+					     float beta, float *Carray[], int ldc, int batchCount) {
+      CUBLAS_CHECK(cublasSgemmBatched(handle, transa, transb, m, n, k, &alpha, const_cast<const float**>(Aarray), lda,
+				      const_cast<const float**>(Barray), ldb, &beta, Carray, ldc, batchCount));
+    }
+
+    template<> void cublasGemmBatched<double>(cublasHandle_t& handle, cublasOperation_t transa,
+					     cublasOperation_t transb, int m, int n, int k,
+					     double alpha, double *Aarray[], int lda, double *Barray[], int ldb,
+					     double beta, double *Carray[], int ldc, int batchCount) {
+      CUBLAS_CHECK(cublasDgemmBatched(handle, transa, transb, m, n, k, &alpha, const_cast<const double**>(Aarray), lda,
+				      const_cast<const double**>(Barray), ldb, &beta, Carray, ldc, batchCount));
+    }
+
+    
     void init() {
       static bool first = true;
       if (first) {

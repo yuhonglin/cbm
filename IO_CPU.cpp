@@ -21,26 +21,26 @@ namespace cbm {
     int first_idx = mat_idx*t.stride()[0] + row_idx*t.stride()[1];
     if (t.dim()[2] <= num_left + num_right) {
       for (; j < t.dim()[2]-1; j++) {
-	std::printf("%.*f%s", accuracy,
+	std::printf("%.*e%s", accuracy,
 		    static_cast<double>(t.data()[first_idx + j*t.stride()[2]]),
 		    sep.c_str());
       }
-      std::printf("%.*f", accuracy,
+      std::printf("%.*e", accuracy,
 		  static_cast<double>(t.data()[first_idx + j*t.stride()[2]]));
     } else {
       for (; j < num_left; j++) {
-	std::printf("%.*f%s", accuracy,
+	std::printf("%.*e%s", accuracy,
 		    static_cast<double>(t.data()[first_idx + j*t.stride()[2]]),
 		    sep.c_str());
       }
       std::printf("...%s", sep.c_str());
       j = t.dim()[2] - num_right;
       for (; j < t.dim()[2]-1; j++) {
-	std::printf("%.*f%s", accuracy,
+	std::printf("%.*e%s", accuracy,
 		    static_cast<double>(t.data()[first_idx + j*t.stride()[2]]),
 		    sep.c_str());
       }
-      std::printf("%.*f%s", accuracy,
+      std::printf("%.*e%s", accuracy,
 		  static_cast<double>(t.data()[first_idx + j*t.stride()[2]]),
 		  sep.c_str());
     }

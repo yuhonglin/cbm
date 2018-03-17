@@ -17,9 +17,9 @@ namespace cbm {
       int lda  = m;
 
       for (int i = 0; i < t->dim()[0]; i++) {
-	lapack::getrf<ScaType>(&m, &n,
+	lapack::getrf<ScaType>(m, n,
 			       t->data() + i*t->stride()[0],
-			       &lda,
+			       lda,
 			       p->data() + i*p->stride()[0],
 			       info->data() + i*info->stride()[0]);
       }
